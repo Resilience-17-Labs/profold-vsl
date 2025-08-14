@@ -15,7 +15,7 @@ const typeRegexString = h`
  )?
  (?:
    (?:\s*\((?<POSSIBLE_VALUES>[a-zA-Z-$_0-9,:|]+)\))?
-   (?:\s*<(?<CONSTRAINTS>[a-zA-Z-$_0-9,:@\.|\s]+)>)?
+   (?:\s*<(?<CONSTRAINTS>[a-zA-Z-$_0-9,!:@\.|\s]+)>)?
  )?
  (?:
   \s+as\s+(?<PROPERTY_ALIAS>[a-zA-Z$_]+[a-zA-Z$_0-9]*)

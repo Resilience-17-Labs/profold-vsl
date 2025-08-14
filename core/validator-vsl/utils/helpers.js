@@ -1,13 +1,20 @@
-//const { processQualifiers, processPossibleValues } = require('./utils');
+// const { processQualifiers, processPossibleValues } = require('./utils');
+
 function processQualifiers(qualifiers) {
   let processedQualifiers;
   if (qualifiers) {
     processedQualifiers = {};
     const qualifierTokens = qualifiers.split('|');
     qualifierTokens.forEach((qt) => {
-      const [qt_key, qt_value] = qt.split(':');
-      processedQualifiers[qt_key] = {
-        value: qt_value,
+      const [gtKey, gtValue] = qt.split(':');
+      const isNot = gtKey.startsWith('!');
+      let key = gtKey;
+      if (isNot) {
+        key = key.replace('!', '');
+      }
+      processedQualifiers[key] = {
+        isNot,
+        value: gtValue,
       };
     });
   }

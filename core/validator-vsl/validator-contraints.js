@@ -5,10 +5,11 @@ function min(value, arg, isNot, prop) {
   }
   // console.log(value, arg);
   const isSatisfied = result ? value : false;
+  const notPrefix = isNot ? ' not ' : ' ';
   return {
     evaluatedValue: value,
     isSatisfied,
-    errorMessage: `Passed ${prop} value ${value} should be greater than ${arg}`,
+    errorMessage: `Passed ${prop} value ${value} should be${notPrefix}greater than ${arg}`,
   };
 }
 
@@ -19,10 +20,11 @@ function max(value, arg, isNot, prop) {
   }
   // return result ? value : false;
   const isSatisfied = result ? value : false;
+  const notPrefix = isNot ? ' not ' : ' ';
   return {
     evaluatedValue: value,
     isSatisfied,
-    errorMessage: `Passed ${prop} value ${value} should be lesser than ${arg}`,
+    errorMessage: `Passed ${prop} value ${value} should be${notPrefix}lesser than ${arg}`,
   };
 }
 
@@ -32,10 +34,11 @@ function length(value, arg, isNot, prop) {
     result = !result;
   }
   const isSatisfied = result ? value : false;
+  const notPrefix = isNot ? ' not ' : ' ';
   return {
     evaluatedValue: value,
     isSatisfied,
-    errorMessage: `Passed ${prop} length ${value.length} should be ${arg}`,
+    errorMessage: `Passed ${prop} length ${value.length} should${notPrefix}be ${arg}`,
   };
 }
 
@@ -47,10 +50,11 @@ function lengthbetween(value, arg, isNot, prop) {
     result = !result;
   }
   const isSatisfied = result ? value : false;
+  const notPrefix = isNot ? ' not ' : ' ';
   return {
     evaluatedValue: value,
     isSatisfied,
-    errorMessage: `Passed ${prop} length ${value.length} should be between ${arg1} and ${arg2}`,
+    errorMessage: `Passed ${prop} length ${value.length} should${notPrefix}be between ${arg1} and ${arg2}`,
   };
 }
 
@@ -60,10 +64,11 @@ function minlength(value, arg, isNot, prop) {
     result = !result;
   }
   const isSatisfied = result ? value : false;
+  const notPrefix = isNot ? ' not ' : ' ';
   return {
     evaluatedValue: value,
     isSatisfied,
-    errorMessage: `Passed ${prop} length ${value.length} should be at least ${arg}`,
+    errorMessage: `Passed ${prop} length ${value.length} should${notPrefix}be at least ${arg}`,
   };
 }
 
@@ -73,10 +78,11 @@ function maxlength(value, arg, isNot, prop) {
     result = !result;
   }
   const isSatisfied = result ? value : false;
+  const notPrefix = isNot ? ' not ' : ' ';
   return {
     evaluatedValue: value,
     isSatisfied,
-    errorMessage: `Passed ${prop} length ${value.length} should be at most ${arg}`,
+    errorMessage: `Passed ${prop} length ${value.length} should${notPrefix}be at most ${arg}`,
   };
 }
 
@@ -87,10 +93,11 @@ function between(value, arg, isNot, prop) {
     result = !result;
   }
   const isSatisfied = result ? value : false;
+  const notPrefix = isNot ? ' not ' : ' ';
   return {
     evaluatedValue: value,
     isSatisfied,
-    errorMessage: `Passed ${prop} value ${value} should be between ${arg1} and ${arg2}`,
+    errorMessage: `Passed ${prop} value ${value} should${notPrefix}be between ${arg1} and ${arg2}`,
   };
 }
 
@@ -100,10 +107,11 @@ function startswith(value, arg, isNot, prop) {
     result = !result;
   }
   const isSatisfied = result ? value : false;
+  const notPrefix = isNot ? ' not ' : ' ';
   return {
     evaluatedValue: value,
     isSatisfied,
-    errorMessage: `Passed ${prop} value ${value} should start with ${arg}`,
+    errorMessage: `Passed ${prop} value ${value} should${notPrefix}start with ${arg}`,
   };
 }
 
@@ -113,10 +121,11 @@ function endswith(value, arg, isNot, prop) {
     result = !result;
   }
   const isSatisfied = result ? value : false;
+  const notPrefix = isNot ? ' not ' : ' ';
   return {
     evaluatedValue: value,
     isSatisfied,
-    errorMessage: `Passed ${prop} value ${value} should end with ${arg}`,
+    errorMessage: `Passed ${prop} value ${value} should${notPrefix}end with ${arg}`,
   };
 }
 
@@ -126,10 +135,11 @@ function isanyof(value, arg, isNot, prop) {
     result = !result;
   }
   const isSatisfied = result ? value : false;
+  const notPrefix = isNot ? ' not ' : ' ';
   return {
     evaluatedValue: value,
     isSatisfied,
-    errorMessage: `Passed ${prop} value ${value} should be any of ${arg}`,
+    errorMessage: `Passed ${prop} value ${value} should${notPrefix}be any of ${arg}`,
   };
 }
 
@@ -151,12 +161,16 @@ function timestamptohex(value) {
 
 function isemail(value, arg, isNot, prop) {
   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const result = emailRegex.test(value) ? value : false;
+  let result = emailRegex.test(value) ? value : false;
+  if (isNot) {
+    result = !result;
+  }
   const isSatisfied = result ? value : false;
+  const lastPhrase = isNot ? 'should not be a valid email' : 'is not a valid email';
   return {
     evaluatedValue: value,
     isSatisfied,
-    errorMessage: `Passed ${prop} value ${value} is not a valid email`,
+    errorMessage: `Passed ${prop} value ${value} ${lastPhrase}`,
   };
 }
 

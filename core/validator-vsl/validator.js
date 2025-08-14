@@ -51,7 +51,7 @@ function evaluateConstraints(value, constraints, prop) {
       const ckObj = constraints[ck];
       const ckFunc = validatorConstraints[cklc];
       if (ckFunc) {
-        const res = ckFunc(constraintValue, ckObj.value, null, prop);
+        const res = ckFunc(constraintValue, ckObj.value, ckObj.isNot, prop);
         let resultingValue = res;
         if (res.errorMessage) {
           const { isSatisfied, errorMessage, evaluatedValue } = res;
