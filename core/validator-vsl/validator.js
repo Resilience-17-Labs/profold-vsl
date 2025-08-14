@@ -20,7 +20,7 @@ function evaluateValueWithType(value, type) {
   };
 }
 
-function evaluatePossibleValues(value, possibleValues) {
+function evaluatePossibleValues(value, possibleValues, prop) {
   let isValid = true;
   let errorMessage = '';
   if (possibleValues && possibleValues.length) {
@@ -28,7 +28,7 @@ function evaluatePossibleValues(value, possibleValues) {
     const pvSet = new Set(possibleValues);
     isValid = pvSet.has(value);
     if (!isValid) {
-      errorMessage = `Expected ${value} to be one of ${possibleValues.join(', ')}`;
+      errorMessage = `Expected ${prop}'s value: ${value} to be one of ${possibleValues.join(', ')}`;
     }
   }
   if (errorMessage) throw new Error(errorMessage);
@@ -77,7 +77,7 @@ function enforceTypeCheck(value, dataType, propPath, config) {
       `Invalid Type Passed for ${propPath}: Expected ${dataType} got ${isValidValueType.valueType}`
     );
   }
-  evaluatePossibleValues(value, possibleValues);
+  evaluatePossibleValues(value, possibleValues, prop);
   const { transformedValue } = evaluateConstraints(value, constraints, prop);
   return typeof transformedValue !== 'undefined' ? transformedValue : value;
 }
