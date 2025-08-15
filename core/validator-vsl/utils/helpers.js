@@ -6,7 +6,11 @@ function processQualifiers(qualifiers) {
     processedQualifiers = {};
     const qualifierTokens = qualifiers.split('|');
     qualifierTokens.forEach((qt) => {
-      const [gtKey, gtValue] = qt.split(':');
+      const splitTokens = qt.split(':');
+      const gtKey = splitTokens[0];
+      const gtValue = splitTokens.slice(1).join(':');
+      // console.log('🎉🎉🎉🎉', gtKey, gtValue);
+      // const [gtKey, gtValue] =
       const isNot = gtKey.startsWith('!');
       let key = gtKey;
       if (isNot) {

@@ -14,8 +14,14 @@ const typeRegexString = h`
    (\.[a-zA-Z_$]+)?
  )?
  (?:
-   (?:\s*\((?<POSSIBLE_VALUES>[a-zA-Z-$_0-9,:|]+)\))?
-   (?:\s*<(?<CONSTRAINTS>[a-zA-Z-$_0-9,!:@\.|\s]+)>)?
+   (?:
+    (?:\s*\((?<POSSIBLE_VALUES>[a-zA-Z-$_0-9\/\.,:|]+)\))?
+    (?:\s*<(?<CONSTRAINTS>[a-zA-Z-$_0-9,!:@\.|\/\s+]+)>)?
+   ) |
+   (?:
+    (?:\s*<(?<CONSTRAINTS_ALT>[a-zA-Z-$_0-9,!:@\.|\/\s+]+)>)?
+    (?:\s*\((?<POSSIBLE_VALUES_ALT>[a-zA-Z-$_0-9\/\.,:|]+)\))?
+   )
  )?
  (?:
   \s+as\s+(?<PROPERTY_ALIAS>[a-zA-Z$_]+[a-zA-Z$_0-9]*)
@@ -41,7 +47,9 @@ function typeLineProcessor(line = '') {
     PROPERTY_ALIAS,
     OPENING_PAREN,
     CONSTRAINTS,
+    CONSTRAINTS_ALT,
     POSSIBLE_VALUES,
+    POSSIBLE_VALUES_ALT,
     OPTIONAL_QUESTIONMARK,
     REFERENCE,
     REFERENCE_ALIAS,
@@ -53,8 +61,8 @@ function typeLineProcessor(line = '') {
     name: PROPERTY_NAME,
     alias: PROPERTY_ALIAS,
     type: PROPERTY_TYPE?.replace('ref:', '#'),
-    constraints: processQualifiers(CONSTRAINTS),
-    possibleValues: processPossibleValues(POSSIBLE_VALUES),
+    constraints: processQualifiers(CONSTRAINTS || CONSTRAINTS_ALT),
+    possibleValues: processPossibleValues(POSSIBLE_VALUES || POSSIBLE_VALUES_ALT),
     isOpened: !!OPENING_PAREN,
     isOptional: !!OPTIONAL_QUESTIONMARK,
     isAReference: !!REFERENCE,

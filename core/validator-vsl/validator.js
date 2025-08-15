@@ -2,16 +2,19 @@ const validatorConstraints = require('./validator-contraints');
 
 function evaluateValueWithType(value, type) {
   let valueIsValidType = false;
+  // console.log(`🐲🐲 ${value} ${type} 🐲🐲`);
   const valueType = typeof value;
   if (type === 'string' && valueType === 'string') {
     valueIsValidType = true;
   } else if (type === 'number' && valueType === 'number') {
     valueIsValidType = true;
-  } else if (type === 'object' && valueType === 'object') {
+  } else if (type === 'object' && valueType === 'object' && !Array.isArray(value)) {
     valueIsValidType = true;
   } else if (type === 'array' && Array.isArray(value)) {
     valueIsValidType = true;
   } else if (type === 'boolean' && valueType === 'boolean') {
+    valueIsValidType = true;
+  } else if (type === 'any') {
     valueIsValidType = true;
   }
   return {
@@ -20,7 +23,21 @@ function evaluateValueWithType(value, type) {
   };
 }
 
+function processArray(func, value, possibleValues, prop) {
+  const result = {
+    isValid: true,
+    errorMessage: '',
+  };
+  value.forEach((v, i) => {
+    func(v, possibleValues, `${prop}[${i}]`);
+  });
+  return result;
+}
+
 function evaluatePossibleValues(value, possibleValues, prop) {
+  if (Array.isArray(value)) {
+    return processArray(evaluatePossibleValues, value, possibleValues, prop);
+  }
   let isValid = true;
   let errorMessage = '';
   if (possibleValues && possibleValues.length) {
@@ -42,7 +59,7 @@ function evaluateConstraints(value, constraints, prop) {
   const isValid = true;
   // const errorMessage = '';
   // Todo: Work in better error messaging.
-  let transformedValue;
+  let transformedValue = value;
   const constraintKeys = Object.keys(constraints || {});
   if (constraintKeys.length) {
     let constraintValue = value;
@@ -52,6 +69,7 @@ function evaluateConstraints(value, constraints, prop) {
       const ckFunc = validatorConstraints[cklc];
       if (ckFunc) {
         const res = ckFunc(constraintValue, ckObj.value, ckObj.isNot, prop);
+        // console.log('res check function call', res, '====');
         let resultingValue = res;
         if (res.errorMessage) {
           const { isSatisfied, errorMessage, evaluatedValue } = res;
@@ -77,8 +95,8 @@ function enforceTypeCheck(value, dataType, propPath, config) {
       `Invalid Type Passed for ${propPath}: Expected ${dataType} got ${isValidValueType.valueType}`
     );
   }
-  evaluatePossibleValues(value, possibleValues, prop);
   const { transformedValue } = evaluateConstraints(value, constraints, prop);
+  evaluatePossibleValues(transformedValue, possibleValues, prop);
   return typeof transformedValue !== 'undefined' ? transformedValue : value;
 }
 
@@ -91,11 +109,16 @@ function validateWithAST(object, tree_, AST, parentChain = '') {
     const value = object[astKey];
     let valueToAssign = value;
     const { alias, isOptional, dataType, constraints, possibleValues, arrayChildrenType } = node; // console.log(constraints, possibleValues);
-    let valueDoesNotExist = !value;
-    if (dataType === 'boolean') {
-      valueDoesNotExist = typeof value === 'undefined';
+    // let valueDoesNotExist = !value;
+    // if (dataType === 'boolean') {
+    //   valueDoesNotExist = typeof value === 'undefined';
+    // }
+    const valueDoesNotExist = typeof value === 'undefined';
+    // console.log('💎💎💎💎💎', isOptional, dataType, value, valueDoesNotExist, `💎💎💎💎💎`);
+    if (!isOptional && valueDoesNotExist) {
+      // console.log('💣 Errored out here', isOptional, valueDoesNotExist, astKey);
+      throw new Error(`${parentChain}${astKey} is required!`);
     }
-    if (!isOptional && valueDoesNotExist) throw new Error(`${parentChain}${astKey} is required!`);
     if (isOptional && typeof value === 'undefined') return;
     const treeKey = alias || astKey;
     const nodeHasChildren = Object.keys(node.children).length;

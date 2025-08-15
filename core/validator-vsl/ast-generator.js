@@ -44,40 +44,39 @@ function extractASTPath(path, AST) {
   let pathFound = true;
   let extractedASTPathValue = AST;
   const ptl = pathTokens.length;
-  for(var x = 0; x < ptl; x++) {
+  for (var x = 0; x < ptl; x++) {
     const astkey = pathTokens[x];
-    if(!AST[astkey]) {
+    if (!AST[astkey]) {
       pathFound = false;
       break;
     } else {
       extractedASTPathValue = extractedASTPathValue[astkey];
     }
   }
-  if(!pathFound) throw new Error(`Spread Path ${path} not found in AST`);
+  if (!pathFound) throw new Error(`Spread Path ${path} not found in AST`);
   return extractedASTPathValue;
 }
 
 function processSpreads(spreads, node, AST) {
-  spreads.forEach(spreadPath => {
+  spreads.forEach((spreadPath) => {
     //console.log(node, spreadPath, AST, 'CHECKING');
     // console.log(AST);
-    const extractedPathValue = (extractASTPath(spreadPath, AST));
+    const extractedPathValue = extractASTPath(spreadPath, AST);
     // console.log('ExtractedValue', extractedPathValue);
-    node.children = {...node.children, ...extractedPathValue.children}
+    node.children = { ...node.children, ...extractedPathValue.children };
   });
 }
 function fillInSpreadVals(AST, trueAST) {
   const ASTKeys = Object.keys(AST);
-  ASTKeys.forEach(astkey => {
+  ASTKeys.forEach((astkey) => {
     const astnode = AST[astkey];
-    if(astnode?.spreads?.length) {
+    if (astnode?.spreads?.length) {
       processSpreads(astnode.spreads, astnode, trueAST);
     }
-    if(Object.keys(astnode.children || {}).length) {
+    if (Object.keys(astnode.children || {}).length) {
       fillInSpreadVals(astnode.children, trueAST);
     }
-  })
-
+  });
 }
 function generateAST(tree, nodeIndices, nodes, isChild) {
   const ASTInit = generateASTFirstPhase(tree, nodeIndices, nodes, isChild);
